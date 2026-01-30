@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_cubit.dart';
 import 'package:flutter_project_bfsi/common/common_widgets.dart';
-import 'package:flutter_project_bfsi/transaction/presentation/transaction_detail_screen.dart';
+import 'package:flutter_project_bfsi/transaction/presentation/transaction_details.dart';
 import 'package:flutter_project_bfsi/transaction/model/transaction_model.dart';
 import 'package:flutter_project_bfsi/transaction/state/transaction_cubit.dart';
 import 'package:flutter_project_bfsi/transaction/state/transaction_state.dart';
@@ -32,7 +32,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   void _openDetails(TransactionModel transaction) {
     Navigator.of(context).push(
       MaterialPageRoute<void>(
-        builder: (_) => TransactionDetailScreen(transaction: transaction),
+        builder: (_) => TransactionDetails(transaction: transaction),
       ),
     );
   }
