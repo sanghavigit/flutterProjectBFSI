@@ -42,13 +42,14 @@ class CustomText extends StatelessWidget {
   }
 }
 
-class CommonTextFormField extends StatelessWidget {
+class CommonTextFormField extends StatefulWidget {
   const CommonTextFormField({
     super.key,
     required this.controller,
     required this.labelText,
     this.prefixIcon,
     this.obscureText = false,
+    this.showObscureToggle = false,
     this.validator,
     this.textInputAction = TextInputAction.next,
     this.onFieldSubmitted,
@@ -58,55 +59,184 @@ class CommonTextFormField extends StatelessWidget {
   final String labelText;
   final IconData? prefixIcon;
   final bool obscureText;
+  final bool showObscureToggle;
   final String? Function(String?)? validator;
   final TextInputAction textInputAction;
   final void Function(String)? onFieldSubmitted;
 
   @override
+  State<CommonTextFormField> createState() => _CommonTextFormFieldState();
+}
+
+class _CommonTextFormFieldState extends State<CommonTextFormField> {
+  late bool _obscureText;
+
+  @override
+  void initState() {
+    super.initState();
+    _obscureText = widget.obscureText;
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TextFormField(
-      controller: controller,
+      controller: widget.controller,
+      obscureText: widget.showObscureToggle ? _obscureText : widget.obscureText,
+      textInputAction: widget.textInputAction,
+      onFieldSubmitted: widget.onFieldSubmitted,
+      validator: widget.validator,
       decoration: InputDecoration(
-        labelText: labelText,
+        labelText: widget.labelText,
         border: const UnderlineInputBorder(),
-        prefixIcon: prefixIcon != null ? Icon(prefixIcon) : null,
+        prefixIcon:
+        widget.prefixIcon != null ? Icon(widget.prefixIcon) : null,
+        suffixIcon: widget.showObscureToggle
+            ? IconButton(
+          icon: Icon(
+            _obscureText ? Icons.visibility_off : Icons.visibility,
+          ),
+          onPressed: () {
+            setState(() {
+              _obscureText = !_obscureText;
+            });
+          },
+        )
+            : null,
       ),
-      obscureText: obscureText,
-      textInputAction: textInputAction,
-      onFieldSubmitted: onFieldSubmitted,
-      validator: validator,
     );
   }
 }
 
-class PrimaryButton extends StatelessWidget {
-  const PrimaryButton({
-    super.key,
-    required this.label,
-    required this.onPressed,
-  });
 
-  final String label;
-  final VoidCallback onPressed;
+class Space extends StatelessWidget {
+  final double width;
+  final double height;
+
+  const Space({super.key, this.width = 0, this.height = 0});
+
+  /// Vertical spacing helper
+  static Widget vertical(double height) => SizedBox(height: height);
+
+  /// Horizontal spacing helper
+  static Widget horizontal(double width) => SizedBox(width: width);
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      style: ElevatedButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 16),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(8),
-        ),
-      ),
-      child: Text(
-        label,
-        style: const TextStyle(
-          fontSize: 16,
-          fontWeight: FontWeight.w600,
-        ),
-      ),
-    );
+    return SizedBox(width: width, height: height);
+  }
+}
+
+enum ButtonType { elevated, outlined, text }
+
+class CustomButton extends StatelessWidget {
+  final String text;
+  final VoidCallback onPressed;
+  final ButtonType type;
+  final double? width;
+  final double? height;
+  final Color? backgroundColor;
+  final Color? textColor;
+  final Color? borderColor;
+  final double? borderRadius;
+  final double? fontSize;
+  final FontWeight? fontWeight;
+  final EdgeInsetsGeometry? padding;
+
+  static const EdgeInsets _defaultPadding = EdgeInsets.symmetric(vertical: 16);
+
+  const CustomButton({
+    super.key,
+    required this.text,
+    required this.onPressed,
+    this.type = ButtonType.elevated,
+    this.width,
+    this.height = 50,
+    this.backgroundColor,
+    this.textColor,
+    this.borderColor,
+    this.borderRadius = 8,
+    this.fontSize = 16,
+    this.fontWeight = FontWeight.w600,
+    this.padding,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final primaryColor = Theme.of(context).colorScheme.primary;
+    final effectiveBorderRadius = borderRadius ?? 8;
+    final effectivePadding = padding ?? _defaultPadding;
+
+    switch (type) {
+      case ButtonType.elevated:
+        final effectiveBg = backgroundColor ?? primaryColor;
+        final effectiveTextColor = textColor ?? Colors.white;
+        return SizedBox(
+          width: width,
+          height: height,
+          child: ElevatedButton(
+            style: ElevatedButton.styleFrom(
+              backgroundColor: effectiveBg,
+              foregroundColor: effectiveTextColor,
+              padding: effectivePadding,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(effectiveBorderRadius),
+              ),
+            ),
+            onPressed: onPressed,
+            child: CustomText(
+              text,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: effectiveTextColor,
+            ),
+          ),
+        );
+
+      case ButtonType.outlined:
+        final effectiveFg = textColor ?? primaryColor;
+        final effectiveBorder = borderColor ?? primaryColor;
+        return SizedBox(
+          width: width,
+          height: height,
+          child: OutlinedButton(
+            style: OutlinedButton.styleFrom(
+              foregroundColor: effectiveFg,
+              side: BorderSide(color: effectiveBorder),
+              padding: effectivePadding,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(effectiveBorderRadius),
+              ),
+            ),
+            onPressed: onPressed,
+            child: CustomText(
+              text,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: effectiveFg,
+            ),
+          ),
+        );
+
+      case ButtonType.text:
+        final effectiveFg = textColor ?? primaryColor;
+        return SizedBox(
+          width: width,
+          height: height,
+          child: TextButton(
+            style: TextButton.styleFrom(
+              foregroundColor: effectiveFg,
+              padding: effectivePadding,
+            ),
+            onPressed: onPressed,
+            child: CustomText(
+              text,
+              fontSize: fontSize,
+              fontWeight: fontWeight,
+              color: effectiveFg,
+            ),
+          ),
+        );
+    }
   }
 }
 

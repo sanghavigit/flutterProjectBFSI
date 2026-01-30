@@ -8,6 +8,8 @@ import 'package:flutter_project_bfsi/transaction/state/transaction_cubit.dart';
 import 'package:flutter_project_bfsi/transaction/state/transaction_state.dart';
 import 'package:intl/intl.dart';
 
+import '../../common/colors.dart';
+
 class TransactionListScreen extends StatefulWidget {
   const TransactionListScreen({super.key});
 
@@ -16,7 +18,8 @@ class TransactionListScreen extends StatefulWidget {
 }
 
 class _TransactionListScreenState extends State<TransactionListScreen> {
-  final _currencyFormatter = NumberFormat.currency(symbol: '₹', decimalDigits: 2);
+  final _currencyFormatter =
+      NumberFormat.currency(symbol: '₹', decimalDigits: 2);
   final _dateFormatter = DateFormat('dd MMM yyyy');
 
   @override
@@ -37,16 +40,20 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const CustomText('Transactions'),
+        backgroundColor: deepPurple,
+        centerTitle: true,
+        title: const CustomText('Transactions', fontSize: 20, fontWeight: FontWeight.w700, color: cream,),
         actions: [
-          TextButton(
-            onPressed: () async {
-              await context.read<AuthCubit>().logout();
-              if (!context.mounted) return;
-              Navigator.of(context).pushReplacementNamed('/');
-            },
-            child: const CustomText('Logout'),
-          ),
+          IconButton(
+              onPressed: () async {
+                await context.read<AuthCubit>().logout();
+                if (!context.mounted) return;
+                Navigator.of(context).pushReplacementNamed('/');
+              },
+              icon: const Icon(
+                Icons.logout_rounded,
+                color: cream,
+              ))
         ],
       ),
       body: BlocConsumer<TransactionCubit, TransactionState>(
@@ -66,39 +73,69 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
             case TransactionError(message: final message):
               return _ErrorView(
                 message: message,
-                onRetry: () => context.read<TransactionCubit>().loadInitialTransactions(),
+                onRetry: () =>
+                    context.read<TransactionCubit>().loadInitialTransactions(),
               );
             case TransactionEmpty():
               return _EmptyView(
-                onRefresh: () => context.read<TransactionCubit>().refreshTransactions(),
+                onRefresh: () =>
+                    context.read<TransactionCubit>().refreshTransactions(),
               );
-            case TransactionLoaded(transactions: final items, hasMore: final hasMore):
-              return RefreshIndicator(
-                onRefresh: () => context.read<TransactionCubit>().refreshTransactions(),
-                child: ListView.builder(
-                  physics: const AlwaysScrollableScrollPhysics(),
-                  itemCount: items.length + (hasMore ? 1 : 0),
-                  itemBuilder: (context, index) {
-                    if (index >= items.length) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        child: Center(
-                          child: OutlinedButton(
-                            onPressed: () => context.read<TransactionCubit>().loadMoreTransactions(),
-                            child: const CustomText('Load more'),
+            case TransactionLoaded(
+                transactions: final items,
+                hasMore: final hasMore
+              ):
+              return SafeArea(
+                child: RefreshIndicator(
+                  onRefresh: () =>
+                      context.read<TransactionCubit>().refreshTransactions(),
+                  child: Container(
+                  decoration: const BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topCenter,
+                      end: Alignment.bottomCenter,
+                      colors: [
+                        deepPurple,
+                        lightPurple
+                      ]
+                    )
+                  ),
+                  child: ListView.builder(
+                    padding: const EdgeInsets.only(top: 16.0),
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: items.length + (hasMore ? 1 : 0),
+                    itemBuilder: (context, index) {
+                      if (index >= items.length) {
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 16),
+                          child: Center(
+                            child: CustomButton(
+                              text: 'Load more',
+                              textColor: deepPurple,
+                              padding: const EdgeInsets.symmetric(vertical: 6.0),
+                              borderRadius: 32.0,
+                              height: 50,
+                              width: 100,
+                              onPressed: () => context
+                                  .read<TransactionCubit>()
+                                  .loadMoreTransactions(),
+                              type: ButtonType.outlined,
+                              borderColor: deepPurple,
+                            ),
                           ),
-                        ),
-                      );
-                    }
+                        );
+                      }
 
-                    final txn = items[index];
-                    return _TransactionTile(
-                      transaction: txn,
-                      currencyText: _currencyFormatter.format(txn.amount),
-                      dateText: _dateFormatter.format(txn.date.toLocal()),
-                      onTap: () => _openDetails(txn),
-                    );
-                  },
+                      final txn = items[index];
+                      return _TransactionTile(
+                        transaction: txn,
+                        currencyText: _currencyFormatter.format(txn.amount),
+                        dateText: _dateFormatter.format(txn.date.toLocal()),
+                        onTap: () => _openDetails(txn),
+                      );
+                    },
+                  ),
+                ),
                 ),
               );
           }
@@ -145,31 +182,36 @@ class _TransactionTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      onTap: onTap,
-      title: CustomText(
-        transaction.id,
-        fontWeight: FontWeight.w600,
-      ),
-      subtitle: CustomText(dateText),
-      isThreeLine: true,
-      trailing: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.end,
-        children: [
-          CustomText(
-            currencyText,
-            fontWeight: FontWeight.w600,
-            fontSize: 14,
-          ),
-          const SizedBox(height: 4),
-          CustomText(
-            _statusLabel(),
-            color: _statusColor(context),
-            fontWeight: FontWeight.w600,
-            fontSize: 12,
-          ),
-        ],
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+      elevation: 0.5,
+      color: tileColor,
+      child: ListTile(
+        onTap: onTap,
+        title: CustomText(
+          transaction.id,
+          fontWeight: FontWeight.w600,
+        ),
+        subtitle: CustomText(dateText),
+        isThreeLine: false,
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            CustomText(
+              currencyText,
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+            Space.vertical(4),
+            CustomText(
+              _statusLabel(),
+              color: _statusColor(context),
+              fontWeight: FontWeight.w600,
+              fontSize: 14,
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -197,10 +239,10 @@ class _ErrorView extends StatelessWidget {
               textAlign: TextAlign.center,
               color: Theme.of(context).colorScheme.error,
             ),
-            const SizedBox(height: 16),
-            ElevatedButton(
+            Space.vertical(16),
+            CustomButton(
+              text: 'Retry',
               onPressed: onRetry,
-              child: const CustomText('Retry'),
             ),
           ],
         ),
@@ -226,10 +268,11 @@ class _EmptyView extends StatelessWidget {
               'No transactions found.',
               textAlign: TextAlign.center,
             ),
-            const SizedBox(height: 12),
-            OutlinedButton(
+            Space.vertical(12),
+            CustomButton(
+              text: 'Refresh',
               onPressed: () => onRefresh(),
-              child: const CustomText('Refresh'),
+              type: ButtonType.outlined,
             ),
           ],
         ),
@@ -237,4 +280,3 @@ class _EmptyView extends StatelessWidget {
     );
   }
 }
-

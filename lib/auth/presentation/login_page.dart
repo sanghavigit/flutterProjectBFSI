@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
                         color: Colors.black87,
                         textAlign: TextAlign.center,
                       ),
-                      const SizedBox(height: 48),
+                      Space.vertical(48),
                       CommonTextFormField(
                         controller: _usernameController,
                         labelText: 'Username',
@@ -84,11 +84,12 @@ class _LoginPageState extends State<LoginPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 16),
+                      Space.vertical(16),
                       CommonTextFormField(
                         controller: _passwordController,
                         labelText: 'Password',
                         prefixIcon: Icons.lock_outline,
+                        showObscureToggle: true,
                         obscureText: true,
                         textInputAction: TextInputAction.done,
                         onFieldSubmitted: (_) => _onLoginPressed(),
@@ -103,20 +104,23 @@ class _LoginPageState extends State<LoginPage> {
                         },
                       ),
                       if (_errorText != null) ...[
-                        const SizedBox(height: 16),
+                        Space.vertical(16),
                         CustomText(
                           _errorText!,
                           color: Theme.of(context).colorScheme.error,
                           textAlign: TextAlign.center,
                         ),
                       ],
-                      const SizedBox(height: 32),
-                      PrimaryButton(
-                        label: isLoading ? 'Logging in...' : 'Login',
+                      Space.vertical(32),
+                      CustomButton(
+                        text: isLoading ? 'Logging in...' : 'Login',
+                        borderRadius: 32,
+                        height: 50,
+                        padding: const EdgeInsets.all(6.0),
                         onPressed: isLoading ? () {} : _onLoginPressed,
                       ),
                       if (isLoading) ...[
-                        const SizedBox(height: 16),
+                        Space.vertical(16),
                         const Center(child: CircularProgressIndicator()),
                       ],
                     ],

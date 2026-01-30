@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_project_bfsi/auth/data/auth_repository.dart';
 import 'package:flutter_project_bfsi/auth/security/secure_storage_service.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_cubit.dart';
+import 'package:flutter_project_bfsi/common/colors.dart';
 import 'package:flutter_project_bfsi/transaction/data/transaction_repository.dart';
 import 'package:flutter_project_bfsi/transaction/presentation/transaction_list_screen.dart';
 import 'package:flutter_project_bfsi/transaction/state/transaction_cubit.dart';
@@ -41,7 +42,7 @@ class MyApp extends StatelessWidget {
             child: MaterialApp(
               title: 'Flutter Demo',
               theme: ThemeData(
-                colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+                colorScheme: ColorScheme.fromSeed(seedColor: deepPurple),
                 useMaterial3: true,
               ),
               routes: {
