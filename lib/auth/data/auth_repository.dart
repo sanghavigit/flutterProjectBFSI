@@ -26,29 +26,72 @@ class AuthRepository {
 }
 
 
+/// Using HTTP package (recommended for most use cases)
+/// Add to pubspec.yaml: http: ^1.2.0
+/*
+Future<String> authenticate(String username, String password) async {
+  try {
+    final response = await http.post(
+      Uri.parse('https url'),
+      body: jsonEncode({'username': username, 'password': password}),
+    ).timeout(const Duration(seconds: 10)); // Manual timeout
 
-///Using dio if url is available
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body)['token'];
+    } else {
+      throw AuthException("Failed to login: ${response.statusCode}");
+    }
+  } on TimeoutException {
+    throw AuthException("API timeout");
+  } catch (e) {
+    throw AuthException(e.toString());
+  }
+}
+*/
 
-//
-// class AuthRepository {
-//   final Dio _dio = Dio();
-//
-//   Future<String> authenticate(String username, String password) async {
-//     try {
-//       final response = await _dio.post(
-//         'https://api.example.com/login',
-//         data: {
-//           'username': username,
-//           'password': password,
-//         },
-//       );
-//
-//       // Dio returns a Map if the response is JSON
-//       return response.data['token'];
-//     } on DioException catch (e) {
-//       // Handle specific status codes or connection issues
-//       throw Exception(e.response?.data['message'] ?? 'Login failed');
-//     }
-//   }
-// }
+
+/// Using Dio package
+/*
+class AuthRepository {
+  final Dio _dio;
+  AuthRepository(this._dio);
+
+
+Future<String> authenticate(String username, String password) async {
+  try {
+    final response = await _dio.post(
+      '/login',
+      data: {
+        'username': username,
+        'password': password,
+      },
+    );
+
+    //as we have json structure
+    return response.data['token'];
+
+  } on DioException catch (e) {
+    _handleDioError(e);
+    rethrow;
+  }
+}
+
+//categorize and throw specific error messages
+void _handleDioError(DioException e) {
+    if (e.type == DioExceptionType.connectionTimeout ||
+        e.type == DioExceptionType.receiveTimeout) {
+      throw AuthException("API timeout");
+    }
+
+    if (e.response?.statusCode == 401) {
+      throw AuthException("Incorrect username or password.");
+    }
+
+    // Default error fallback
+    throw AuthException(e.response?.data['message'] ?? "Oops! something went wrong");
+  }
+}
+
+}
+*/
 

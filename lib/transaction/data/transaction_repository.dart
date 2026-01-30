@@ -84,3 +84,56 @@ class TransactionRepository {
   }
 }
 
+
+
+
+/// Using Dio
+/// Add to pubspec.yaml: dio: ^5.4.0
+/*
+
+Future<List<TransactionModel>> fetchTransactions({
+  required int page,
+  required int limit,
+  required String token, // You'll need the token from the Login module
+}) async {
+  try {
+
+    final response = await _dio.get(
+      '/transactions',
+      queryParameters: {
+        'page': page,
+        'limit': limit,
+      },
+      options: Options(
+        headers: {
+          'Authorization': 'Bearer $token', // Passing the token received from Login
+        },
+        sendTimeout: const Duration(seconds: 10),
+        receiveTimeout: const Duration(seconds: 10),
+      ),
+    );
+
+
+    if (response.statusCode == 200) {
+      final List<dynamic> data = response.data;
+      return data
+          .map((json) => TransactionModel.fromJson(json))
+          .toList();
+    } else {
+      throw TransactionRepositoryException('Server error: ${response.statusCode}');
+    }
+
+  } on DioException catch (e) {
+    if (e.type == DioExceptionType.connectionTimeout) {
+      throw TransactionRepositoryException('API timeout');
+    }
+    if (e.response?.statusCode == 401) {
+      throw TransactionRepositoryException('Session expired. Please login again.');
+    }
+    throw TransactionRepositoryException(e.message ?? 'Failed to fetch transactions');
+  } catch (e) {
+    throw TransactionRepositoryException('An unexpected error occurred: $e');
+  }
+}
+*/
+
