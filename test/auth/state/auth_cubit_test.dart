@@ -2,7 +2,6 @@ import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:flutter_project_bfsi/auth/data/auth_repository.dart';
-import 'package:flutter_project_bfsi/auth/security/secure_storage_service.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_cubit.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_state.dart';
 import '../../mocks/mock_repositories.dart';
