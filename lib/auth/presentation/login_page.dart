@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_cubit.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_state.dart';
+import 'package:flutter_project_bfsi/common/colors.dart';
 import 'package:flutter_project_bfsi/common/common_widgets.dart';
 
 class LoginPage extends StatefulWidget {
@@ -117,6 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                         borderRadius: 32,
                         height: 50,
                         padding: const EdgeInsets.all(6.0),
+                        backgroundColor: isLoading ? lightPurple : deepPurple,
                         onPressed: isLoading ? () {} : _onLoginPressed,
                       ),
                       if (isLoading) ...[
