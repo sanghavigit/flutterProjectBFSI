@@ -1,6 +1,6 @@
 # Flutter BFSI Project
 
-A Flutter application for Banking, Financial Services, and Insurance (BFSI) sector, featuring secure authentication and transaction management capabilities.
+A Flutter application for Banking, Financial Services, and Insurance (BFSI) sector, featuring secure authentication and simulates a secure transaction dashboard.
 
 ## Table of Contents
 
