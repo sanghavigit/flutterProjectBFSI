@@ -20,10 +20,12 @@ final class TransactionLoaded extends TransactionState {
   const TransactionLoaded({
     required this.transactions,
     required this.hasMore,
+    this.isLoadingMore = false,
   });
 
   final List<TransactionModel> transactions;
   final bool hasMore;
+  final bool isLoadingMore;
 }
 
 final class TransactionError extends TransactionState {

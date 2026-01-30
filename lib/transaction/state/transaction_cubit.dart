@@ -51,6 +51,11 @@ class TransactionCubit extends Cubit<TransactionState> {
     if (!_hasMore || _isLoadingMore) return;
 
     _isLoadingMore = true;
+    emit(TransactionLoaded(
+      transactions: List.unmodifiable(_transactions),
+      hasMore: _hasMore,
+      isLoadingMore: true,
+    ));
     try {
       final nextPage = _page + 1;
       final results = await _repository.fetchTransactions(
@@ -60,20 +65,36 @@ class TransactionCubit extends Cubit<TransactionState> {
 
       if (results.isEmpty) {
         _hasMore = false;
-        emit(TransactionLoaded(transactions: List.unmodifiable(_transactions), hasMore: _hasMore));
+        emit(TransactionLoaded(
+          transactions: List.unmodifiable(_transactions),
+          hasMore: _hasMore,
+          isLoadingMore: false,
+        ));
         return;
       }
 
       _page = nextPage;
       _transactions.addAll(results);
       _hasMore = results.length == pageSize;
-      emit(TransactionLoaded(transactions: List.unmodifiable(_transactions), hasMore: _hasMore));
+      emit(TransactionLoaded(
+        transactions: List.unmodifiable(_transactions),
+        hasMore: _hasMore,
+        isLoadingMore: false,
+      ));
     } on TransactionRepositoryException catch (e) {
       emit(TransactionError(message: e.message));
-      emit(current);
+      emit(TransactionLoaded(
+        transactions: List.unmodifiable(_transactions),
+        hasMore: _hasMore,
+        isLoadingMore: false,
+      ));
     } catch (_) {
       emit(const TransactionError(message: 'Unable to load more transactions.'));
-      emit(current);
+      emit(TransactionLoaded(
+        transactions: List.unmodifiable(_transactions),
+        hasMore: _hasMore,
+        isLoadingMore: false,
+      ));
     } finally {
       _isLoadingMore = false;
     }

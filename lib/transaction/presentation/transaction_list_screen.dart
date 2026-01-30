@@ -7,6 +7,7 @@ import 'package:flutter_project_bfsi/transaction/model/transaction_model.dart';
 import 'package:flutter_project_bfsi/transaction/state/transaction_cubit.dart';
 import 'package:flutter_project_bfsi/transaction/state/transaction_state.dart';
 import 'package:intl/intl.dart';
+import 'package:shimmer/shimmer.dart';
 
 import '../../common/colors.dart';
 
@@ -69,7 +70,7 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
             case TransactionInitial():
               return const SizedBox.shrink();
             case TransactionLoading():
-              return const Center(child: CircularProgressIndicator());
+              return const _TransactionListShimmer();
             case TransactionError(message: final message):
               return _ErrorView(
                 message: message,
@@ -83,7 +84,8 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
               );
             case TransactionLoaded(
                 transactions: final items,
-                hasMore: final hasMore
+                hasMore: final hasMore,
+                isLoadingMore: final isLoadingMore,
               ):
               return SafeArea(
                 child: RefreshIndicator(
@@ -103,9 +105,24 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
                   child: ListView.builder(
                     padding: const EdgeInsets.only(top: 16.0),
                     physics: const ClampingScrollPhysics(),
-                    itemCount: items.length + (hasMore ? 1 : 0),
+                    itemCount: items.length + (hasMore || isLoadingMore ? 1 : 0),
                     itemBuilder: (context, index) {
                       if (index >= items.length) {
+                        if (isLoadingMore) {
+                          return const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: Center(
+                              child: SizedBox(
+                                width: 28,
+                                height: 28,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2.5,
+                                  color: deepPurple,
+                                ),
+                              ),
+                            ),
+                          );
+                        }
                         return Padding(
                           padding: const EdgeInsets.symmetric(vertical: 16),
                           child: Center(
@@ -209,6 +226,103 @@ class _TransactionTile extends StatelessWidget {
               color: _statusColor(context),
               fontWeight: FontWeight.w600,
               fontSize: 14,
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _TransactionListShimmer extends StatelessWidget {
+  const _TransactionListShimmer();
+
+  static const int _shimmerTileCount = 8;
+
+  @override
+  Widget build(BuildContext context) {
+    return SafeArea(
+      child: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [tileColor, lightPurple],
+          ),
+        ),
+        child: Shimmer.fromColors(
+          baseColor: Colors.grey.shade300,
+          highlightColor: Colors.grey.shade100,
+          child: ListView.builder(
+            padding: const EdgeInsets.only(top: 16.0),
+            physics: const ClampingScrollPhysics(),
+            itemCount: _shimmerTileCount,
+            itemBuilder: (context, index) => const _ShimmerTile(),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ShimmerTile extends StatelessWidget {
+  const _ShimmerTile();
+
+  @override
+  Widget build(BuildContext context) {
+    const placeholderColor = Color(0xFFE0E0E0);
+    return Card(
+      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 5.0),
+      elevation: 0.5,
+      color: tileColor,
+      child: ListTile(
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 8,
+        ),
+        title: Container(
+          height: 16,
+          width: 160,
+          decoration: BoxDecoration(
+            color: placeholderColor,
+            borderRadius: BorderRadius.circular(4),
+          ),
+        ),
+        subtitle: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Space.vertical(8),
+            Container(
+              height: 14,
+              width: 100,
+              decoration: BoxDecoration(
+                color: placeholderColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+          ],
+        ),
+        trailing: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            Container(
+              height: 14,
+              width: 56,
+              decoration: BoxDecoration(
+                color: placeholderColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ),
+            Space.vertical(8),
+            Container(
+              height: 12,
+              width: 52,
+              decoration: BoxDecoration(
+                color: placeholderColor,
+                borderRadius: BorderRadius.circular(4),
+              ),
             ),
           ],
         ),
