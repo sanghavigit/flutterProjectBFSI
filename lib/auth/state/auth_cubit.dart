@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc/bloc.dart';
 import 'package:flutter_project_bfsi/auth/data/auth_repository.dart';
 import 'package:flutter_project_bfsi/auth/state/auth_state.dart';
@@ -14,6 +16,22 @@ class AuthCubit extends Cubit<AuthState> {
   final AuthRepository _authRepository;
   final SecureStorageService _secureStorageService;
 
+  Timer? _inactivityTimer;
+  static const Duration _inactivityTimeout = Duration(minutes: 5);
+
+  void resetInactivityTimer() {
+    _inactivityTimer?.cancel();
+    if (state is AuthAuthenticated) {
+      _inactivityTimer = Timer(_inactivityTimeout, _handleInactivityTimeout);
+    }
+  }
+
+  void _handleInactivityTimeout() {
+    if (state is AuthAuthenticated) {
+      logout();
+    }
+  }
+
   Future<void> checkSession() async {
     final token = await _secureStorageService.readToken();
     if (token == null || token.isEmpty) {
@@ -22,6 +40,7 @@ class AuthCubit extends Cubit<AuthState> {
     }
 
     emit(AuthAuthenticated(token: token));
+    resetInactivityTimer();
   }
 
   Future<void> login({
@@ -37,6 +56,7 @@ class AuthCubit extends Cubit<AuthState> {
       );
       await _secureStorageService.saveToken(token);
       emit(AuthAuthenticated(token: token));
+      resetInactivityTimer();
     } on AuthException catch (e) {
       emit(AuthError(message: e.message));
     } catch (_) {
@@ -45,8 +65,16 @@ class AuthCubit extends Cubit<AuthState> {
   }
 
   Future<void> logout() async {
+    _inactivityTimer?.cancel();
+    _inactivityTimer = null;
     await _secureStorageService.clearToken();
     emit(const AuthInitial());
+  }
+
+  @override
+  Future<void> close() {
+    _inactivityTimer?.cancel();
+    return super.close();
   }
 }
 
