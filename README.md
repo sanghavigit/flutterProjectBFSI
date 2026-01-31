@@ -144,26 +144,6 @@ User Interaction → Widget → Cubit (Business Logic) → Repository (Data) →
    flutter run
    ```
 
-   For web:
-   ```bash
-   flutter run -d chrome
-   ```
-
-   For desktop (macOS):
-   ```bash
-   flutter run -d macos
-   ```
-
-   For desktop (Linux):
-   ```bash
-   flutter run -d linux
-   ```
-
-   For desktop (Windows):
-   ```bash
-   flutter run -d windows
-   ```
-
 ### Login Credentials
 
 The app uses mock authentication. Use these credentials to log in:
@@ -192,16 +172,6 @@ flutter build apk --release
 iOS:
 ```bash
 flutter build ios --release
-```
-
-Web:
-```bash
-flutter build web --release
-```
-
-macOS:
-```bash
-flutter build macos --release
 ```
 
 ## Libraries and Design Decisions
