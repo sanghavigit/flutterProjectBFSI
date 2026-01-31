@@ -6,6 +6,7 @@ A Flutter application for Banking, Financial Services, and Insurance (BFSI) sect
 
 - [Project Overview](#project-overview)
 - [Architecture](#architecture)
+- [📥 Download and Run](#-download-and-run)
 - [How to Run the App](#how-to-run-the-app)
 - [Libraries and Design Decisions](#libraries-and-design-decisions)
 - [Project Structure](#project-structure)
@@ -106,6 +107,16 @@ User Interaction → Widget → Cubit (Business Logic) → Repository (Data) →
 3. **Dependency Injection**: Using flutter_bloc's RepositoryProvider and BlocProvider
 4. **Singleton Pattern**: For services like SecureStorageService
 5. **Factory Pattern**: For model instantiation from JSON
+
+## 📥 Download and Run
+
+You can download the production-grade APK directly from the [GitHub Releases](https://github.com/sanghavigit/flutterProjectBFSI/releases/tag/v1.0.0).
+
+1. Download the `.apk` file.
+2. Install it on an Android device.
+3. Use the following mock credentials for login:
+   - **Username:** user
+   - **Password:** password
 
 ## How to Run the App
 
