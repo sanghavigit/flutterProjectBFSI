@@ -158,8 +158,8 @@ You can download the production-grade APK directly from the [GitHub Releases](ht
 ### Login Credentials
 
 The app uses mock authentication. Use these credentials to log in:
-- **Username**: Any non-empty string (e.g., `user@example.com`)
-- **Password**: Any non-empty string (e.g., `password123`)
+- **Username**: Any non-empty string (e.g., `user`)
+- **Password**: Any non-empty string (e.g., `password`)
 
 ### Testing
 
