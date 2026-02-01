@@ -37,6 +37,32 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     );
   }
 
+  Future<void> _onLogoutPressed() async {
+    final shouldLogout = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Log out'),
+        content: const Text(
+          'Are you sure you want to log out?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(false),
+            child: const Text('No'),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
+    );
+    if (shouldLogout != true || !context.mounted) return;
+    await context.read<AuthCubit>().logout();
+    if (!context.mounted) return;
+    Navigator.of(context).pushReplacementNamed('/');
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -46,15 +72,12 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
         title: const CustomText('Transactions', fontSize: 20, fontWeight: FontWeight.w700, color: cream,),
         actions: [
           IconButton(
-              onPressed: () async {
-                await context.read<AuthCubit>().logout();
-                if (!context.mounted) return;
-                Navigator.of(context).pushReplacementNamed('/');
-              },
-              icon: const Icon(
-                Icons.logout_rounded,
-                color: cream,
-              ))
+            onPressed: _onLogoutPressed,
+            icon: const Icon(
+              Icons.logout_rounded,
+              color: cream,
+            ),
+          ),
         ],
       ),
       body: BlocConsumer<TransactionCubit, TransactionState>(
