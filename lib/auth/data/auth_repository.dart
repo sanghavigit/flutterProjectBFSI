@@ -1,3 +1,5 @@
+import 'package:flutter/foundation.dart';
+
 class AuthException implements Exception {
   AuthException(this.message);
   final String message;
@@ -10,17 +12,23 @@ class AuthRepository {
     required String username,
     required String password,
   }) async {
-    print('[AuthRepository] login() called');
-    
+    if (kDebugMode) {
+      print('[AuthRepository] login() called');
+    }
+
     // Simulate network latency.
     await Future<void>.delayed(const Duration(seconds: 2));
 
     if (username == 'user' && password == 'password') {
-      print('[AuthRepository] Login successful');
+      if (kDebugMode) {
+        print('[AuthRepository] Login successful');
+      }
       return 'abc.def.ghi';
     }
 
-    print('[AuthRepository] Login failed - Invalid credentials');
+    if (kDebugMode) {
+      print('[AuthRepository] Login failed - Invalid credentials');
+    }
     throw AuthException('Invalid username or password.');
   }
 }

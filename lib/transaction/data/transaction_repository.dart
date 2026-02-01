@@ -1,6 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_project_bfsi/transaction/model/transaction_model.dart';
 
@@ -20,10 +20,14 @@ class TransactionRepository {
     required int page,
     required int limit,
   }) async {
-    print('[TransactionRepository] fetchTransactions() called with page: $page, limit: $limit');
-    
+    if (kDebugMode) {
+      print('[TransactionRepository] fetchTransactions() called with page: $page, limit: $limit');
+    }
+
     if (page < 1 || limit < 1) {
-      print('[TransactionRepository] Error - Invalid pagination parameters: page=$page, limit=$limit');
+      if (kDebugMode) {
+        print('[TransactionRepository] Error - Invalid pagination parameters: page=$page, limit=$limit');
+      }
       throw TransactionRepositoryException('Invalid pagination parameters.');
     }
 
@@ -33,14 +37,20 @@ class TransactionRepository {
     final dynamic decoded;
     try {
       decoded = jsonDecode(rawJson);
-      print('[TransactionRepository] Successfully parsed JSON data');
+      if (kDebugMode) {
+        print('[TransactionRepository] Successfully parsed JSON data');
+      }
     } catch (e) {
-      print('[TransactionRepository] Error - Failed to parse transaction data: $e');
+      if (kDebugMode) {
+        print('[TransactionRepository] Error - Failed to parse transaction data: $e');
+      }
       throw TransactionRepositoryException('Failed to parse transaction data.');
     }
 
     if (decoded is! List) {
-      print('[TransactionRepository] Error - Unexpected data format (not a List)');
+      if (kDebugMode) {
+        print('[TransactionRepository] Error - Unexpected data format (not a List)');
+      }
       throw TransactionRepositoryException('Unexpected transaction data format.');
     }
 
@@ -49,11 +59,15 @@ class TransactionRepository {
         .map(TransactionModel.fromJson)
         .toList(growable: false);
 
-    print('[TransactionRepository] Total transactions loaded: ${items.length}');
+    if (kDebugMode) {
+      print('[TransactionRepository] Total transactions loaded: ${items.length}');
+    }
 
     final startIndex = (page - 1) * limit;
     if (startIndex >= items.length) {
-      print('[TransactionRepository] No more transactions available (startIndex: $startIndex >= total: ${items.length})');
+      if (kDebugMode) {
+        print('[TransactionRepository] No more transactions available (startIndex: $startIndex >= total: ${items.length})');
+      }
       return const <TransactionModel>[];
     }
 
@@ -62,23 +76,33 @@ class TransactionRepository {
         : (startIndex + limit);
 
     final result = items.sublist(startIndex, endIndex);
-    print('[TransactionRepository] Returning ${result.length} transactions (from index $startIndex to $endIndex)');
+    if (kDebugMode) {
+      print('[TransactionRepository] Returning ${result.length} transactions (from index $startIndex to $endIndex)');
+    }
     return result;
   }
 
   Future<String> _loadAsset() async {
-    print('[TransactionRepository] Loading asset from: $assetPath');
+    if (kDebugMode) {
+      print('[TransactionRepository] Loading asset from: $assetPath');
+    }
     try {
       final data = await rootBundle.loadString(assetPath);
-      print('[TransactionRepository] Asset loaded successfully (${data.length} characters)');
+      if (kDebugMode) {
+        print('[TransactionRepository] Asset loaded successfully (${data.length} characters)');
+      }
       return data;
     } on FlutterError catch (e) {
-      print('[TransactionRepository] Error - Asset not found: $assetPath, error: $e');
+      if (kDebugMode) {
+        print('[TransactionRepository] Error - Asset not found: $assetPath, error: $e');
+      }
       throw TransactionRepositoryException(
         'Transaction data not available. Please ensure the asset is registered in pubspec.yaml.',
       );
     } catch (e) {
-      print('[TransactionRepository] Error - Failed to load asset: $e');
+      if (kDebugMode) {
+        print('[TransactionRepository] Error - Failed to load asset: $e');
+      }
       throw TransactionRepositoryException('Failed to load transaction data.');
     }
   }
