@@ -23,7 +23,7 @@ class AuthRepository {
       print('[AuthRepository] login() called');
     }
 
-    // Simulate network latency.
+    /// To simulate API delay.
     await Future<void>.delayed(const Duration(seconds: 2));
 
     final rawJson = await _loadAsset();
