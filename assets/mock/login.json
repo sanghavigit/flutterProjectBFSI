@@ -1,0 +1,12 @@
+[
+  {
+    "username": "user",
+    "password": "password",
+    "token": "abc.def.ghi"
+  },
+  {
+    "username": "demo",
+    "password": "demo123",
+    "token": "demo.token.xyz"
+  }
+]

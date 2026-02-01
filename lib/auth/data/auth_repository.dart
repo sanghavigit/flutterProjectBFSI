@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/foundation.dart';
+import 'package:flutter/services.dart';
 
 class AuthException implements Exception {
   AuthException(this.message);
@@ -6,7 +9,11 @@ class AuthException implements Exception {
 }
 
 class AuthRepository {
-  const AuthRepository();
+  const AuthRepository({
+    this.assetPath = 'assets/mock/login.json',
+  });
+
+  final String assetPath;
 
   Future<String> login({
     required String username,
@@ -19,17 +26,72 @@ class AuthRepository {
     // Simulate network latency.
     await Future<void>.delayed(const Duration(seconds: 2));
 
-    if (username == 'user' && password == 'password') {
+    final rawJson = await _loadAsset();
+    final dynamic decoded;
+    try {
+      decoded = jsonDecode(rawJson);
       if (kDebugMode) {
-        print('[AuthRepository] Login successful');
+        print('[AuthRepository] Successfully parsed login mock data');
       }
-      return 'abc.def.ghi';
+    } catch (e) {
+      if (kDebugMode) {
+        print('[AuthRepository] Error - Failed to parse login data: $e');
+      }
+      throw AuthException('Login service unavailable. Please try again.');
+    }
+
+    if (decoded is! List) {
+      if (kDebugMode) {
+        print('[AuthRepository] Error - Unexpected login data format (not a List)');
+      }
+      throw AuthException('Invalid login configuration.');
+    }
+
+    for (final entry in decoded) {
+      if (entry is! Map<String, dynamic>) continue;
+      final storedUsername = entry['username'] as String?;
+      final storedPassword = entry['password'] as String?;
+      final token = entry['token'] as String?;
+      if (storedUsername == username &&
+          storedPassword == password &&
+          token != null &&
+          token.isNotEmpty) {
+        if (kDebugMode) {
+          print('[AuthRepository] Login successful');
+        }
+        return token;
+      }
     }
 
     if (kDebugMode) {
       print('[AuthRepository] Login failed - Invalid credentials');
     }
     throw AuthException('Invalid username or password.');
+  }
+
+  Future<String> _loadAsset() async {
+    if (kDebugMode) {
+      print('[AuthRepository] Loading asset from: $assetPath');
+    }
+    try {
+      final data = await rootBundle.loadString(assetPath);
+      if (kDebugMode) {
+        print('[AuthRepository] Asset loaded successfully (${data.length} characters)');
+      }
+      return data;
+    } on FlutterError catch (e) {
+      if (kDebugMode) {
+        print('[AuthRepository] Error - Asset not found: $assetPath, error: $e');
+      }
+      throw AuthException(
+        'Login data not available. Please ensure the asset is registered in pubspec.yaml.',
+      );
+    } catch (e) {
+      if (kDebugMode) {
+        print('[AuthRepository] Error - Failed to load asset: $e');
+      }
+      throw AuthException('Login service unavailable. Please try again.');
+    }
   }
 }
 

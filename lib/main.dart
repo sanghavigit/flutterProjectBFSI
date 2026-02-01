@@ -58,26 +58,29 @@ class MyApp extends StatelessWidget {
                       context.read<AuthCubit>().resetInactivityTimer();
                     },
                     child: MaterialApp(
-                  navigatorKey: _navigatorKey,
-                  title: 'Flutter Demo',
-                  theme: ThemeData(
-                    colorScheme: ColorScheme.fromSeed(seedColor: deepPurple),
-                    useMaterial3: true,
+                      navigatorKey: _navigatorKey,
+                      title: 'Secure Transaction Dashboard',
+                      theme: ThemeData(
+                        colorScheme:
+                            ColorScheme.fromSeed(seedColor: deepPurple),
+                        useMaterial3: true,
+                      ),
+                      routes: {
+                        '/': (_) => const LoginPage(),
+                        '/transactions': (context) =>
+                            BlocProvider<TransactionCubit>(
+                              create: (_) => TransactionCubit(
+                                repository:
+                                    context.read<TransactionRepository>(),
+                                pageSize: 10,
+                              ),
+                              child: const TransactionListScreen(),
+                            ),
+                      },
+                      initialRoute: '/',
+                    ),
                   ),
-                  routes: {
-                    '/': (_) => const LoginPage(),
-                    '/transactions': (context) => BlocProvider<TransactionCubit>(
-                          create: (_) => TransactionCubit(
-                            repository: context.read<TransactionRepository>(),
-                            pageSize: 10,
-                          ),
-                          child: const TransactionListScreen(),
-                        ),
-                  },
-                  initialRoute: '/',
-                ),
-              ),
-            );
+                );
               },
             ),
           );
