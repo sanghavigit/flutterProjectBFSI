@@ -41,18 +41,28 @@ class _TransactionListScreenState extends State<TransactionListScreen> {
     final shouldLogout = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Log out'),
-        content: const Text(
+        title: const CustomText(
+          'Log out',
+          fontSize: 20,
+          fontWeight: FontWeight.w600,
+        ),
+        content: const CustomText(
           'Are you sure you want to log out?',
         ),
         actions: [
-          TextButton(
+          CustomButton(
+            text: 'No',
+            type: ButtonType.text,
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('No'),
           ),
-          TextButton(
+          CustomButton(
+            text: 'Yes',
+            type: ButtonType.text,
+            height: 40,
+            padding: const EdgeInsets.symmetric(horizontal: 16),
             onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Yes'),
           ),
         ],
       ),
