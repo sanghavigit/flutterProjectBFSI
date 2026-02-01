@@ -414,10 +414,13 @@ class _EmptyView extends StatelessWidget {
             const CustomText(
               'No transactions found.',
               textAlign: TextAlign.center,
+              fontSize: 18,
             ),
             Space.vertical(12),
             CustomButton(
               text: 'Refresh',
+              padding: const EdgeInsets.all(6.0),
+              width: 80,
               onPressed: () => onRefresh(),
               type: ButtonType.outlined,
             ),
